@@ -1,59 +1,16 @@
-import discord
-from discord.ext import commands
-import openai
 import os
-from dotenv import load_dotenv
+import sys
 
-# Load environment variables
-load_dotenv()
+# Function to get environment variable with error handling
+def get_env_var(var_name):
+    """Retrieve an environment variable or exit on failure."""
+    value = os.getenv(var_name)
+    if value is None:
+        print(f'Error: Environment variable {var_name} not set.')
+        sys.exit(1)
+    return value
 
-# Set up Discord bot
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+# Read the token from the environment variables
+TOKEN = get_env_var('DISCORD_TOKEN')
 
-# Set up OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
-@bot.event
-async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-
-@bot.event
-async def on_message(message):
-    # Don't respond to ourselves
-    if message.author == bot.user:
-        return
-    
-    # Ignore messages without content or from bots
-    if not message.content or message.author.bot:
-        return
-    
-    # Show typing indicator
-    async with message.channel.typing():
-        try:
-            # Call OpenAI API
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "user", "content": message.content}
-                ],
-                max_tokens=500,
-                temperature=0.7
-            )
-            
-            # Get the response text
-            reply = response['choices'][0]['message']['content']
-            
-            # Send response (split if too long for Discord's 2000 char limit)
-            if len(reply) > 2000:
-                for i in range(0, len(reply), 2000):
-                    await message.reply(reply[i:i+2000])
-            else:
-                await message.reply(reply)
-                
-        except Exception as e:
-            await message.reply(f"Error: {str(e)}")
-
-# Run the bot
-bot.run(os.getenv('DISCORD_TOKEN'))
+# ... rest of your main.py code here ...
