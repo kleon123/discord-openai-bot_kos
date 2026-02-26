@@ -71,16 +71,3 @@ async def on_message(message):
 # Run the bot
 if __name__ == "__main__":
     bot.run(DISCORD_TOKEN)
-
-
-
-
-
-
-
-
-
-
-
-
-
