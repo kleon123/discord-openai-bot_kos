@@ -4,8 +4,21 @@ import openai
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables from .env file (for local development)
 load_dotenv()
+
+# Get the Discord token
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Check if tokens are set
+if not DISCORD_TOKEN:
+    print("ERROR: DISCORD_TOKEN not found in environment variables!")
+    exit(1)
+
+if not OPENAI_API_KEY:
+    print("ERROR: OPENAI_API_KEY not found in environment variables!")
+    exit(1)
 
 # Set up Discord bot
 intents = discord.Intents.default()
@@ -13,7 +26,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Set up OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
+openai.api_key = OPENAI_API_KEY
 
 @bot.event
 async def on_ready():
@@ -56,4 +69,18 @@ async def on_message(message):
             await message.reply(f"Error: {str(e)}")
 
 # Run the bot
-bot.run(os.getenv('DISCORD_TOKEN'))
+if __name__ == "__main__":
+    bot.run(DISCORD_TOKEN)
+
+
+
+
+
+
+
+
+
+
+
+
+
